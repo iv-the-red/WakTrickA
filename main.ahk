@@ -1,12 +1,12 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-
 ; ========================================
 ; WakaTime Activity Simulator v1.0
 ; By Ivthered
 ; ========================================
 
 ; --- Configuration ---
+
 global MinSleepSeconds := 18
 global MaxSleepSeconds := 25
 global MinGibberishLength := 10
@@ -42,15 +42,15 @@ Loop {
     CycleCount++
     UpdateStatus("Starting cycle " . CycleCount)
     
-    ; Window focus verification
+    
     EnsureVSCodeFocus()
     
-    ; Generate gibberish once
+    
     rememberedText := GenerateGibberish()
     
     UpdateStatus("Finding empty line...")
     
-    ; Find and use empty line
+    
     Loop {
         testLine := Random(20, 500)
         
@@ -61,7 +61,7 @@ Loop {
         SendEvent "{Enter}"
         Sleep 1000
         
-        ; Check current line
+        
         Send "{Home}+{End}^c"
         Sleep 500
         currentContent := Trim(A_Clipboard)
@@ -74,7 +74,7 @@ Loop {
             break
         }
         
-        ; Check line underneath
+        
         Send "{Down}{Home}+{End}^c"
         Sleep 500
         belowContent := Trim(A_Clipboard)
@@ -88,10 +88,10 @@ Loop {
         }
     }
     
-    ; Wait after gibberish
+    
     CountdownWait(20, "Waiting after gibberish")
     
-    ; Add comment
+    
     UpdateStatus("Adding comment...")
     Send "{End}{Enter}{Enter}"
     Sleep 500
@@ -100,10 +100,10 @@ Loop {
     commentText := "// WakePoke " . emoji . " " . timestamp . " #" . CycleCount
     SendInput "{Text}" commentText
     
-    ; Wait after comment
+    
     CountdownWait(20, "Waiting after comment")
     
-    ; Add/update variable
+    
     UpdateStatus("Managing variables...")
     Send "^{Home}{Home}{Enter}{Up}"
     Sleep 500
@@ -121,7 +121,7 @@ Loop {
     
     Sleep 2000
     
-    ; Delete gibberish
+    
     UpdateStatus("Cleaning up gibberish...")
     Send "^h"
     Sleep 1200
@@ -129,24 +129,62 @@ Loop {
     Sleep 800
     Send "{Tab}"
     Sleep 600
-    Send "^a{Del}"
+    SendInput "{Text}"  
     Sleep 600
     Send "^!{Enter}"
     Sleep 1500
     Send "{Escape}"
     Sleep 800
     
-    ; Final variable change
+    
+    UpdateStatus("Verifying cleanup...")
+    Send "^f"
+    Sleep 500
+    SendInput "{Text}" rememberedText
+    Sleep 500
+    Send "{Enter}"
+    Sleep 500
+    
+    
+    Send "^c"
+    Sleep 300
+    foundText := A_Clipboard
+    
+    if (InStr(foundText, rememberedText)) {
+        UpdateStatus("WARNING: Gibberish deletion failed! Retrying...")
+        
+        Send "{Escape}"
+        Sleep 300
+        Send "^h"
+        Sleep 800
+        SendInput "{Text}" rememberedText
+        Sleep 500
+        Send "{Tab}"
+        Sleep 300
+        SendInput "{Text}"
+        Sleep 300
+        Send "^!{Enter}"
+        Sleep 1000
+        Send "{Escape}"
+        UpdateStatus("Retry cleanup completed")
+    } else {
+        UpdateStatus("Gibberish successfully deleted")
+    }
+    
+    Send "{Escape}"
+    Sleep 300
+    
+    
     ChangeVariableValue(currentVariable)
     
-    ; Save
+    
     UpdateStatus("Saving file...")
     Send "^s"
     Sleep 1000
     
     UpdateStatus("Cycle " . CycleCount . " completed successfully")
     
-    ; Wait for next cycle
+    
     waitTime := Random(MinSleepSeconds * 1000, MaxSleepSeconds * 1000)
     CountdownWait(waitTime/1000, "Next cycle")
 }
@@ -196,7 +234,7 @@ UpdateGUI() {
 }
 
 UpdateStatus(message) {
-    ; You can add logging here if needed
+    
 }
 
 TogglePause() {
