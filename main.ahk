@@ -55,15 +55,15 @@ Loop {
         testLine := Random(20, 500)
         
         Send "^g"
-        Sleep 500
+        Sleep 700
         SendInput "{Text}" testLine
-        Sleep 500
+        Sleep 700
         SendEvent "{Enter}"
-        Sleep 800
+        Sleep 1000
         
         ; Check current line
         Send "{Home}+{End}^c"
-        Sleep 300
+        Sleep 500
         currentContent := Trim(A_Clipboard)
         
         if (StrLen(currentContent) == 0) {
@@ -76,7 +76,7 @@ Loop {
         
         ; Check line underneath
         Send "{Down}{Home}+{End}^c"
-        Sleep 300
+        Sleep 500
         belowContent := Trim(A_Clipboard)
         
         if (StrLen(belowContent) == 0) {
@@ -121,21 +121,20 @@ Loop {
     
     Sleep 2000
     
-    ; Delete gibberish properly
+    ; Delete gibberish
     UpdateStatus("Cleaning up gibberish...")
     Send "^h"
-    Sleep 800
+    Sleep 1200
     SendInput "{Text}" rememberedText
-    Sleep 500
-    Send "{Tab}"
-    Sleep 300
-    ; Clear replace field and leave empty
-    Send "^a{Del}"
-    Sleep 300
-    Send "^!{Enter}"
     Sleep 800
+    Send "{Tab}"
+    Sleep 600
+    Send "^a{Del}"
+    Sleep 600
+    Send "^!{Enter}"
+    Sleep 1500
     Send "{Escape}"
-    Sleep 500
+    Sleep 800
     
     ; Final variable change
     ChangeVariableValue(currentVariable)
@@ -261,15 +260,15 @@ EnsureVSCodeFocus() {
 
 ChangeVariableValue(varName) {
     Send "^f"
-    Sleep 500
+    Sleep 800
     SendInput "{Text}" varName . " = "
-    Sleep 500
+    Sleep 800
     SendEvent "{Enter}"
-    Sleep 500
+    Sleep 800
     Send "{Escape}{End}{Left 2}^+{Left}"
-    Sleep 300
+    Sleep 500
     SendInput "{Text}" Random(1, 999)
-    Sleep 300
+    Sleep 500
 }
 
 GenerateGibberish() {
